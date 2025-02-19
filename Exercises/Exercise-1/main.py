@@ -1,11 +1,10 @@
-from io import BytesIO
 import os
 import re
-from typing import List
-import requests as r
 import zipfile as zp
+from io import BytesIO
+from typing import List
 
-import pandas as pd
+import requests as r
 
 download_uris = [
     "https://divvy-tripdata.s3.amazonaws.com/Divvy_Trips_2018_Q4.zip",
@@ -21,7 +20,7 @@ dir_path = ''
 
 
 def main():
-    ''' '''
+    ''' main '''
     global dir_path
     dir_path = _create_downloads_dir()
 
@@ -31,7 +30,10 @@ def main():
 
 
 def _process_uris(uri_set: List) -> None:
-    ''' docstring '''
+    ''' High level helper that calls all uri processing functions.
+        params:
+            uri_set: List - uris to process.
+    '''
     for uri in uri_set:
         file_name = _extract_file_name(uri)
         _make_file(uri, file_name)
@@ -39,7 +41,12 @@ def _process_uris(uri_set: List) -> None:
 
 
 def _create_downloads_dir() -> str:
-    ''' docstring'''
+    ''' Creates the downloads directory if not currently present.
+        We use os.getcwd and path.join to have a path agnostic of
+        system.
+        params:
+            None
+    '''
     current_path, new_dir = os.getcwd(), 'downloads'
     new_path = os.path.join(current_path, new_dir)
     if not os.path.isdir(new_path):
@@ -48,7 +55,11 @@ def _create_downloads_dir() -> str:
 
 
 def _extract_file_name(uri: str) -> str:
-    ''' docstring '''
+    ''' Creates the full file name with csv extension from list
+        of uris.
+        params:
+            uri: string - uri used for file name extraction
+    '''
     match = re.search(r'([^\/]+)(?=\.zip$)', uri)
     if match:
         file_name = match.group(1)
@@ -57,13 +68,18 @@ def _extract_file_name(uri: str) -> str:
 
 
 def _make_file(uri: str, file_name: str) -> None:
-    ''' docstring'''
+    ''' Makes the GET request, and given valid response, we proceed
+        with writing the file to disk.
+        params:
+            uri: string - uri used for request
+            file_name: string - created by way of extracting from uri
+    '''
     res = r.get(uri)
     if res.ok:
         print('#' * 50)
         print(uri, file_name)
         _ = (zp.ZipFile(BytesIO(res.content))
-                .extract(member=file_name, path=dir_path))
+                .extract(member=file_name, path=dir_path))  # went this way as opposed to context wrapping an open file to write
     return
 
 
