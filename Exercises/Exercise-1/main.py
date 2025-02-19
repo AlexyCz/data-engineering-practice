@@ -1,6 +1,7 @@
 from io import BytesIO
 import os
 import re
+from typing import List
 import requests as r
 import zipfile as zp
 
@@ -20,20 +21,24 @@ dir_path = ''
 
 
 def main():
-    ''' docstring'''
-    # TO DO:
-        # download files
+    ''' '''
     global dir_path
     dir_path = _create_downloads_dir()
 
-    for uri in download_uris:
-        file_name = _extract_file_name(uri)
-        _make_file(uri, file_name)
+    _process_uris(download_uris)
 
     return
 
 
-def _create_downloads_dir():
+def _process_uris(uri_set: List) -> None:
+    ''' docstring '''
+    for uri in uri_set:
+        file_name = _extract_file_name(uri)
+        _make_file(uri, file_name)
+    return
+
+
+def _create_downloads_dir() -> str:
     ''' docstring'''
     current_path, new_dir = os.getcwd(), 'downloads'
     new_path = os.path.join(current_path, new_dir)
@@ -42,17 +47,21 @@ def _create_downloads_dir():
     return new_path
 
 
-def _extract_file_name(uri: str):
-    file_name = re.search(r'([^\/]+)(?=\.zip$)', uri).group(1)
-    if file_name:
+def _extract_file_name(uri: str) -> str:
+    ''' docstring '''
+    match = re.search(r'([^\/]+)(?=\.zip$)', uri)
+    if match:
+        file_name = match.group(1)
         return ''.join([file_name, '.csv'])
     return ''
 
 
-def _make_file(uri: str, file_name: str):
+def _make_file(uri: str, file_name: str) -> None:
     ''' docstring'''
     res = r.get(uri)
     if res.ok:
+        print('#' * 50)
+        print(uri, file_name)
         _ = (zp.ZipFile(BytesIO(res.content))
                 .extract(member=file_name, path=dir_path))
     return
