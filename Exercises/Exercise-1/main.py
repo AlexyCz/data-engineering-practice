@@ -76,8 +76,6 @@ def _make_file(uri: str, file_name: str) -> None:
     '''
     res = r.get(uri)
     if res.ok:
-        print('#' * 50)
-        print(uri, file_name)
         _ = (zp.ZipFile(BytesIO(res.content))
                 .extract(member=file_name, path=dir_path))  # went this way as opposed to context wrapping an open file to write
     return
