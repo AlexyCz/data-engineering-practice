@@ -1,0 +1,44 @@
+[+] Building 63.3s (6/10)                                                                docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                     0.0s
+ => => transferring dockerfile: 1.13kB                                                                   0.0s
+ => [internal] load metadata for docker.io/library/python:latest                                         1.7s
+ => [internal] load .dockerignore                                                                        0.0s
+ => => transferring context: 2B                                                                          0.0s
+ => CACHED [1/6] FROM docker.io/library/python:latest@sha256:1f7ef1e8f35bc8629b05f4df943175f2851ba05f4a  0.0s
+ => => resolve docker.io/library/python:latest@sha256:1f7ef1e8f35bc8629b05f4df943175f2851ba05f4a509f723  0.0s
+ => [internal] load build context                                                                        0.0s
+ => => transferring context: 581B                                                                        0.0s
+ => ERROR [2/6] RUN apt-get update &&     apt-get install -y default-jdk scala wget vim software-prope  61.5s
+------
+ > [2/6] RUN apt-get update &&     apt-get install -y default-jdk scala wget vim software-properties-common python3.8 python3-pip curl unzip libpq-dev build-essential libssl-dev libffi-dev python3-dev &&     apt-get clean:
+0.847 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+1.551 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+2.071 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+2.319 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8792 kB]
+58.52 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [512 B]
+58.61 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [252 kB]
+59.94 Fetched 9300 kB in 59s (156 kB/s)
+59.94 Reading package lists...
+60.65 Reading package lists...
+61.31 Building dependency tree...
+61.46 Reading state information...
+61.46 Package python3.8 is not available, but is referred to by another package.
+61.46 This may mean that the package is missing, has been obsoleted, or
+61.46 is only available from another source
+61.46
+61.46 E: Package 'python3.8' has no installation candidate
+------
+
+ 1 warning found (use docker --debug to expand):
+ - WorkdirRelativePath: Relative workdir "app" can have unexpected results if the base image changes (line 17)
+Dockerfile:3
+--------------------
+   2 |
+   3 | >>> RUN apt-get update && \
+   4 | >>>     apt-get install -y default-jdk scala wget vim software-properties-common python3.8 python3-pip curl unzip libpq-dev build-essential libssl-dev libffi-dev python3-dev && \
+   5 | >>>     apt-get clean
+   6 |
+--------------------
+ERROR: failed to solve: process "/bin/sh -c apt-get update &&     apt-get install -y default-jdk scala wget vim software-properties-common python3.8 python3-pip curl unzip libpq-dev build-essential libssl-dev libffi-dev python3-dev &&     apt-get clean" did not complete successfully: exit code: 100
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/qo0cekwxvrdlyagw4c1x1f09r

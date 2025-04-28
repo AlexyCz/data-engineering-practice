@@ -1,3 +1,8 @@
-*.idea*
-*.DS_Store*
-*postgres-data*
+# virtual environment files...
+**/.venv/*
+**/.virtual/*
+
+# caching files...
+**/__pycache__/*
+*.pyc
+*.DS_Store
