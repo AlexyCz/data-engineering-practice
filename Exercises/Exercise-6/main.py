@@ -244,12 +244,28 @@ def main():
     # rank the counts and output
 
     valid_sdf = sdf.filter(sdf.gender.isNotNull())
-    gender_avg_trip_sdf = valid_sdf.groupBy('gender').agg(F.avg(valid_sdf.trip_duration).alias('avg_gender_trip_duration'))
+    gender_avg_trip_sdf = valid_sdf.groupBy('gender').agg(F.avg(valid_sdf.trip_duration).alias('gender_avg_trip_duration'))
 
 
     ###################################################################################################################
 
     # generate report 6
+    # ? top 10 ages: longest trips, shortest trips
+    # sort by trip duration, desc.
+    # take top 10, and final 10
+    # get ages column
+    # merge into one df, sorted on trip duration, desc
+    # or or
+    # we can group by age, avg agg respectively on their trip durations, and take top + bottom 10 of ages when sorted desc on avg trip duration.
+    #
+    valid_sdf = sdf.filter(sdf.birthyear.isNotNull())
+    ages_sdf = sdf.withColumn('age', F.floor(F.months_between(F.current_date() - F.col('birthyear')) / 12).cast(T.IntegerType()))
+    ages_sdf = ages_sdf.groupBy('age').agg(F.avg(ages_sdf.trip_duration).alias('age_avg_trip_duration'))
+
+    top_ten_sdf = ages_sdf.orderBy(F.col('age_avg_trip_duration').desc()).limit(10)
+    bottom_ten_sdf = ages_sdf.orderBy(F.col('age_avg_trip_duration').asc()).limit(10)
+    top_bottom_ten_sdf = bottom_ten_sdf.union(top_ten_sdf)
+
 
 if __name__ == "__main__":
     main()
