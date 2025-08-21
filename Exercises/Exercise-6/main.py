@@ -198,7 +198,10 @@ def main():
     # make a date column
     sdf = sdf.withColumn('end_date', F.col('end_time').cast(T.DateType()))
 
-    avgTripDurationDay_sdf = (sdf.groupBy('end_date').agg(F.avg(sdf.tripduration)).select(F.col('end_date'), F.col('trip_duration')))  # output csv...
+    avgTripDurationDay_sdf = (sdf.groupBy('end_date').agg(F.avg(sdf.tripduration).alias('trip_duration')).select(F.col('end_date'), F.col('trip_duration')))  # output csv...
+
+    avgTripDurationDay_sdf.coalesce(1).write.mode('overwrite').option('header', 'true').csv('/reports/report_1')
+    return
     ###################################################################################################################
 
     # generate report 2
@@ -212,7 +215,7 @@ def main():
     month_station_sdf = sdf.withColumn('start_month_date', F.to_date(sdf.start_time, 'MM/yyyy'))
     # popularStartStation_sdf = sdf.groupBy('start_month_date', 'start_station_name').agg(F.count().alias('station_count')).sort(F.col('station_count').desc()).limit(1).select('month_date', 'start_station_name')
     station_count_sdf = month_station_sdf.groupBy('start_month_date', 'start_station_id').agg(F.count().alias('month_visit_count'))
-    window = Window.partitionBy('start_month_date').orderBy(F.col('month_visit_count').desc())
+    window = Window.partitionBy('start_month_date').orderBy(F.col('month_visit_count').desc())  # could add additional arg describing to order by alphabet to have a definite first.
 
     top_station_monthly_sdf = station_count_sdf.withColumn('rank', F.dense_rank().over(window)).filter(F.col('rank') == 1).drop('rank')
 
