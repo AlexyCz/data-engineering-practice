@@ -20,6 +20,8 @@ def main():
     s_df = extract_csv(s_df, file_path, spark)
     
     s_df = extract_date_from_file(s_df)
+    
+    s_df = extract_brand_from_model(s_df)
 
     return s_df
 
@@ -81,6 +83,14 @@ def extract_brand_from_model(s_df: DataFrame) -> DataFrame:
             )
 
     return s_df
+
+
+def calculating_storage_ranking(s_df: DataFrame) -> DataFrame:
+    '''
+    We have column `capacity_bytes` and column `model`. The aim is to get storage capacity rankings
+    for present models in the data based off the capacity provided.
+    '''
+    pass
 
 
 if __name__ == "__main__":
