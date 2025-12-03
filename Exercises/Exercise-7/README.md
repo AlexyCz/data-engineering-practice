@@ -32,13 +32,15 @@ date,serial_number,model,capacity_bytes,failure,smart_1_normalized,smart_1_raw,s
 Your job is to read this file with `PySpark` and answer the following questions.
 Answer each question by adding a new column with the answer. 
 
-1. Add the file name as a column to the DataFrame and call it `source_file`.
-2. Pull the `date` located inside the string of the `source_file` column. Final data-type must be 
-`date` or `timestamp`, not a `string`. Call the new column `file_date`.
-3. Add a new column called `brand`. It will be based on the column `model`. If the
+~~1. Add the file name as a column to the DataFrame and call it `source_file`.~~
+
+~~2. Pull the `date` located inside the string of the `source_file` column. Final data-type must be~~
+~~`date` or `timestamp`, not a `string`. Call the new column `file_date`.~~
+
+~~3. Add a new column called `brand`. It will be based on the column `model`. If the
 column `model` has a space ... aka ` ` in it, split on that `space`. The value
    found before the space ` ` will be considered the `brand`. If there is no
-   space to split on, fill in a value called `unknown` for the `brand`.
+   space to split on, fill in a value called `unknown` for the `brand`.~~
    
 4. Inspect a column called `capacity_bytes`. Create a secondary DataFrame that
 relates `capacity_bytes` to the `model` column, create "buckets" / "rankings" for
