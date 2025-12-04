@@ -1,44 +1,53 @@
 import gzip
 import io
+from os import SEEK_SET
+import logging
 
 import boto3
 
 from constants import BUCKET, COMMON_CRAWL_KEY
 
+logger = logging.getLogger()
 
-def read_from_s3(client, bucket, key, num_lines=-1, print_out=False):
-    ''' docstring. '''
-    ret_line = ''
-    data_file = io.BytesIO()
-    print('*'*75)
-    print(f'bucket: {bucket}, key: {key}')
-    print('*'*75)
-    client.download_fileobj(bucket, key, data_file)
-    data_file.seek(0)
 
-    with gzip.open(filename=data_file, mode='rt', encoding='utf-8') as curr_file:
-        while num_lines:
-            content = curr_file.readline()
-            if content:
-                num_lines -= 1
-                ret_line = content
-                if print_out:
-                    print(content)
+def read_from_s3(client, bucket, key, full_file=False):
+    '''
+        Reads from an s3 bucket given the following params:
+        
+        client: boto3 session client,
+        bucket: string,
+        key: string,
+        full_file: boolean representing single line or full read
+        
+    '''
 
-    data_file.close()
-
-    return ret_line
+    logger.warning(f'retreiving from bucket: {bucket} with key: {key}\n')
+    content = ''
+    
+    with io.BytesIO() as data_file_obj:
+        client.download_fileobj(bucket, key, data_file_obj)
+        data_file_obj.seek(SEEK_SET)  # prepare pointer for read, i.e. reset stream position
+        
+        with gzip.open(filename=data_file_obj, mode='rt', encoding='utf-8') as read_file:
+            if full_file:
+                content = read_file.read()
+            else:
+                content = read_file.readline()
+            print(content)
+    return content
 
 
 def main():
-    ''' docstring'''
-    global COMMON_CRAWL_KEY
+    '''
+    We read the first line off an index wet.paths file, and subsequently read the entire file at location.
+    '''
 
     session = boto3.session.Session()
     esssthree = session.client('s3')
 
-    new_key = read_from_s3(esssthree, BUCKET, COMMON_CRAWL_KEY, num_lines=1)
-    _ = read_from_s3(client=esssthree, bucket=BUCKET, key=new_key, print_out=True)
+    new_key = read_from_s3(client=esssthree, bucket=BUCKET, key=COMMON_CRAWL_KEY)  # first file parsed is an index, only first line needed
+    
+    _ = read_from_s3(client=esssthree, bucket=BUCKET, key=new_key, full_file=True)  # whole file read out
 
     return
 
